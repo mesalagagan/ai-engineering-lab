@@ -33,6 +33,11 @@ These same checks run automatically in the `Python quality` GitHub Actions workf
 ## Layout
 
 - `src/ai_engineering_lab/`: importable application package
+- `classifier.py`: deterministic support ticket classification
+- `vectorizer.py`: educational bag-of-words vectors
+- `tfidf.py`: normalized TF-IDF vectors and cosine similarity
+- `retrieval.py`: reusable historical ticket retrieval
+- `evaluation.py`: precision@k and recall@k metrics
 - `tests/`: pytest test suite
 - `docs/learning-log.md`: milestone history, decisions, and next steps
 - `pyproject.toml`: project metadata and tool configuration

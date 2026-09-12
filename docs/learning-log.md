@@ -83,12 +83,71 @@ For the sentences `"red apple"` and `"blue apple red"`, the vocabulary is `{ "re
 
 Whitespace tokenization keeps punctuation attached, so `"hello,"` and `"hello"` are different tokens. This keeps the lesson focused on the relationship between text and vectors; punctuation cleanup, weighting such as TF-IDF, and sparse representations can be introduced later.
 
+## Feature 3: Normalized TF-IDF and Similarity
+
+### Goal
+
+Weight document terms by both their frequency in a document and their usefulness across the fitted collection, then compare vectors with cosine similarity.
+
+### Implementation
+
+- `tfidf.py` owns the standard-library-only `TfidfVectorizer`.
+- Tokenization lowercases text and extracts word-like tokens with a small regular expression.
+- `fit()` builds a stable vocabulary, counts document frequency, and calculates smoothed IDF with `log((1 + n_documents) / (1 + document_frequency)) + 1`.
+- `transform()` calculates normalized term frequency as `count / total_tokens`, then multiplies it by IDF. Repeated terms therefore receive proportionally larger weights.
+- Unknown tokens are ignored as features, empty documents return zero vectors, and `cosine_similarity()` safely handles zero vectors.
+- `most_similar()` ranks document indexes by descending cosine similarity.
+
+### Production Python Concepts
+
+- Fit-time statistics and transform-time inference are separate, which prevents query data from changing the vocabulary or IDF values.
+- The implementation uses explicit lists and dictionaries to keep the algorithm inspectable before introducing numerical libraries.
+- Small similarity helpers can be reused by later retrieval abstractions without coupling them to ticket metadata.
+
+### Deliberate Limitations
+
+This is a dense educational implementation. It does not yet use sparse vectors, sublinear term frequency, configurable normalization, stemming, or a third-party numerical library. Those tradeoffs are intentionally deferred until the underlying algorithm is familiar.
+
+## Feature 4: Reusable Ticket Retrieval
+
+### Goal
+
+Turn the TF-IDF and cosine-similarity primitives into a reusable search component for historical support tickets.
+
+### Implementation
+
+- `retrieval.py` defines the immutable `RetrievedTicket` result dataclass and the `TicketRetriever` abstraction.
+- `TicketRetriever` stores ticket IDs and original text, fits one TF-IDF vectorizer during initialization, and caches historical ticket vectors.
+- `search()` transforms each query with the existing fitted vectorizer, ranks cached vectors, and returns the original ticket metadata with similarity scores.
+- Search validates `top_k`, supports empty and unknown queries safely, and never refits for an individual query.
+
+### Example
+
+Given historical tickets such as `"password reset failed"` and `"invoice payment failed"`, a query like `"password reset problem"` is transformed into the same feature space and compared against the cached ticket vectors. The result preserves IDs such as `AUTH-1` so a caller can link similarity results back to the source record.
+
+## Feature 5: Retrieval Evaluation
+
+### Goal
+
+Measure whether the retrieval results contain the historical tickets known to be relevant.
+
+### Implementation
+
+- `evaluation.py` provides standard-library-only `precision_at_k()` and `recall_at_k()` functions.
+- Precision measures relevant results among the first `k` results; recall measures relevant tickets found among all known relevant tickets.
+- Both metrics validate positive `k`. Recall rejects an empty relevant-ticket set because its denominator would be undefined.
+- The test suite includes an end-to-end ticket retrieval example that compares returned IDs with known authentication-ticket IDs.
+
+### Deliberate Limitations
+
+Evaluation currently accepts manually supplied relevant IDs. A future lesson can introduce labeled datasets, aggregate metrics across queries, and compare retrieval configurations without embedding labels in the retriever itself.
+
 ## Delivery Workflow
 
 For each milestone:
 
 1. Create a dated feature branch.
-2. Update this log with the goal and design decisions.
+2. Update this log and the README when the project surface changes.
 3. Implement the smallest useful slice with tests.
 4. Run pytest, Ruff, and mypy.
 5. Commit the completed slice and push the branch to GitHub.
@@ -110,5 +169,6 @@ The workflow uses `uv sync --locked`, so CI honors the committed lock file. To m
 
 - Add classification explanations while preserving the current domain contract.
 - Move rules into explicit, testable configuration.
-- Add a small evaluation dataset and measure rule coverage.
+- Add a labeled retrieval dataset and aggregate metrics across multiple queries.
+- Compare retrieval behavior with sparse representations or a standard numerical library when the educational baseline is complete.
 - Introduce an HTTP boundary only after the core domain behavior is stable.
