@@ -61,6 +61,28 @@ CLI example: authentication / high / negative
 
 The classifier uses substring rules and is intentionally not production-complete. It does not yet handle configuration-driven rules, explain its decisions, or measure classification quality against labeled data. Those are useful later lessons, but adding them now would obscure the first domain boundary.
 
+## Feature 2: Numerical Text Representation
+
+### Goal
+
+Represent sentences as small numerical vectors using a bag-of-words model, without introducing NumPy or another runtime dependency.
+
+### Implementation
+
+- `vectorizer.py` owns the `BagOfWordsVectorizer` and uses only Python's standard library.
+- Tokenization is intentionally simple: `casefold()` normalizes case, then `split()` separates tokens on whitespace.
+- `fit()` builds a vocabulary in first-seen order, assigning each unique token an integer index.
+- `transform()` creates one count vector per sentence. Each vector position corresponds to the vocabulary token at that index.
+- Tokens not present in the fitted vocabulary are ignored, so new text has the same fixed vector shape.
+
+### Vocabulary, Tokens, and Vectors
+
+For the sentences `"red apple"` and `"blue apple red"`, the vocabulary is `{ "red": 0, "apple": 1, "blue": 2 }`. The vocabulary maps each token to its vector position. The resulting vectors are `[1, 1, 0]` and `[1, 1, 1]`: each number is the count of that token in the sentence. This preserves which words occur and how often, but not word order or meaning.
+
+### Deliberate Limitations
+
+Whitespace tokenization keeps punctuation attached, so `"hello,"` and `"hello"` are different tokens. This keeps the lesson focused on the relationship between text and vectors; punctuation cleanup, weighting such as TF-IDF, and sparse representations can be introduced later.
+
 ## Delivery Workflow
 
 For each milestone:
