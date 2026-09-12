@@ -11,5 +11,9 @@
             "source.organizeImports.ruff": "explicit"
         }
     },
-    "ruff.nativeServer": "on"
+    "ruff.nativeServer": "on",
+    "chat.tools.terminal.autoApprove": {
+        "git push": true,
+        "&": true
+    }
 }
