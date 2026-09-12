@@ -56,17 +56,33 @@ class TfidfVectorizer:
         return self
 
     def transform(self, documents: Iterable[str]) -> list[list[float]]:
-        """Convert documents into TF-IDF vectors using the fitted vocabulary."""
+        """Convert documents into normalized TF-IDF vectors.
+
+        Term frequency is the token count divided by the total number of
+        tokens in the document. Unknown tokens are excluded from the output
+        vector, but still count toward the document's total token count.
+        """
         if not self._is_fitted:
             raise ValueError("fit must be called before transform")
 
         vectors: list[list[float]] = []
         for document in documents:
+            tokens = _tokenize(document)
             vector = [0.0] * len(self._vocabulary)
-            for token in _tokenize(document):
+            if not tokens:
+                vectors.append(vector)
+                continue
+
+            token_counts: dict[str, int] = {}
+            for token in tokens:
+                token_counts[token] = token_counts.get(token, 0) + 1
+
+            total_tokens = len(tokens)
+            for token, count in token_counts.items():
                 token_index = self._vocabulary.get(token)
                 if token_index is not None:
-                    vector[token_index] += self._idf[token]
+                    term_frequency = count / total_tokens
+                    vector[token_index] = term_frequency * self._idf[token]
             vectors.append(vector)
 
         return vectors
