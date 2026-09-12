@@ -215,6 +215,45 @@ Move from lexical word-overlap retrieval toward learned dense representations th
 
 The current retriever uses brute-force dense matrix comparison and an in-memory index. Production systems may use model-specific batching, access-control filters, vector databases, approximate nearest-neighbor indexes, and hybrid lexical-plus-semantic retrieval.
 
+## Feature 9: Lexical Versus Semantic Retrieval Experiment
+
+### Goal
+
+Compare TF-IDF lexical retrieval and dense embedding semantic retrieval over the same historical tickets and identical queries.
+
+### Implementation
+
+- `experiments/compare_retrieval.py` defines a small support-ticket corpus and six reusable queries.
+- The experiment creates one `TicketRetriever` and one `SemanticTicketRetriever` over the same corpus, using one shared `TextEmbedder` instance for semantic retrieval.
+- For every query it prints the top three ticket IDs, scores, and text for both methods.
+- The experiment tests use a deterministic fake embedder, so normal test runs do not download model weights.
+
+### Observations
+
+- Both methods agree on several exact-term queries such as `payment failed`, `transaction declined`, and `checkout payment error`.
+- Semantic retrieval finds the refund ticket for `I want my money back`, even though the query does not share the word `refund` with the ticket.
+- TF-IDF and embedding scores are on different scales and should not be compared numerically. The useful comparison is ranking quality and task relevance.
+- Semantic retrieval does not replace lexical retrieval: exact IDs, error codes, names, and rare technical terms can still benefit from lexical matching.
+
+This is a small illustrative experiment, not a statistically meaningful benchmark. A production comparison needs a larger labeled query set, repeatable evaluation, latency measurements, and slices for important ticket categories.
+
+## Feature 10: Quantitative Retrieval Evaluation
+
+### Goal
+
+Measure TF-IDF and semantic rankings with precision@3 and recall@3 over the same demo corpus and query set.
+
+### Implementation
+
+- `experiments/evaluate_retrieval.py` reuses the comparison experiment's tickets, queries, retrievers, and one shared embedder.
+- Manually created relevance labels define illustrative ground truth for each query.
+- The experiment prints returned IDs and per-query precision/recall, then calculates mean metrics for each retrieval method.
+- Raw TF-IDF and embedding scores are intentionally excluded from comparison because their scales are not equivalent.
+
+### Deliberate Limitations
+
+The labels and six-query dataset are educational examples, not production relevance judgments. Meaningful evaluation requires a larger representative query set, independent labeling, confidence or agreement checks, latency measurements, and regression tracking.
+
 ## Delivery Workflow
 
 For each milestone:

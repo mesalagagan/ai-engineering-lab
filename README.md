@@ -47,6 +47,8 @@ These same checks run automatically in the `Python quality` GitHub Actions workf
 - `numpy_retrieval.py`: vectorized NumPy ticket retrieval
 - `embeddings.py`: sentence-transformers text embedding wrapper
 - `semantic_retrieval.py`: dense embedding ticket retrieval
+- `experiments/compare_retrieval.py`: lexical versus semantic retrieval experiment
+- `experiments/evaluate_retrieval.py`: precision@3 and recall@3 comparison
 - `tests/`: pytest test suite
 - `docs/learning-log.md`: milestone history, decisions, and next steps
 - `pyproject.toml`: project metadata and tool configuration
