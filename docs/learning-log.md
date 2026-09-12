@@ -73,6 +73,17 @@ For each milestone:
 
 GitHub can require reviews, checks, or status approvals through repository settings. The local workflow can consistently validate and push code, but it must not attempt to bypass those repository controls.
 
+## Quality Gate: GitHub Pull Requests
+
+The repository now runs the same local quality commands in `.github/workflows/python-quality.yml` for pull requests targeting `main` or `develop`:
+
+- `uv run pytest`
+- `uv run ruff format --check .`
+- `uv run ruff check .`
+- `uv run mypy src tests`
+
+The workflow uses `uv sync --locked`, so CI honors the committed lock file. To make this equivalent to a required coding standard, configure `Tests, Ruff, and mypy` as a required status check in the branch protection rules for `main` and `develop`.
+
 ## Next Milestones
 
 - Add classification explanations while preserving the current domain contract.

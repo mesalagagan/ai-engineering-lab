@@ -28,6 +28,8 @@ uv run ruff check .
 uv run mypy src tests
 ```
 
+These same checks run automatically in the `Python quality` GitHub Actions workflow for pull requests targeting `main` or `develop`, and for pushes to those branches. In GitHub repository settings, mark the workflow's `Tests, Ruff, and mypy` job as a required status check under branch protection to enforce the standard before merging.
+
 ## Layout
 
 - `src/ai_engineering_lab/`: importable application package
