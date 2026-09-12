@@ -59,7 +59,7 @@ def test_supplied_embedder_is_reused() -> None:
 
     retriever = make_retriever(fake_embedder)
 
-    assert retriever.embedder is fake_embedder
+    assert retriever.embedder is cast(TextEmbedder, fake_embedder)
 
 
 def test_historical_embeddings_are_generated_in_one_batch() -> None:
