@@ -142,6 +142,55 @@ Measure whether the retrieval results contain the historical tickets known to be
 
 Evaluation currently accepts manually supplied relevant IDs. A future lesson can introduce labeled datasets, aggregate metrics across queries, and compare retrieval configurations without embedding labels in the retriever itself.
 
+## Feature 6: NumPy Fundamentals
+
+### Goal
+
+Learn how Python sequences map to NumPy arrays and how common vector operations are expressed with numerical-computing primitives.
+
+### Implementation
+
+- `numpy_basics.py` provides small, typed helpers for creating float vectors and matrices.
+- `vector_from_values()` converts an iterable of values into a one-dimensional floating-point array.
+- `dot_product()`, `vector_norm()`, and `cosine_similarity_numpy()` demonstrate NumPy dot products, L2 norms, and cosine similarity.
+- `vectors_to_matrix()` converts equally sized collections into a two-dimensional float matrix.
+- Vector operations validate dimensionality and lengths; cosine similarity returns `0.0` when either vector has zero norm.
+- NumPy is now a runtime dependency, while the earlier classifier, TF-IDF, retrieval, and evaluation lessons remain unchanged.
+
+### Production Python Concepts
+
+- Arrays make numerical shape and dtype explicit, which catches incompatible inputs before computation.
+- Vectorized library operations express mathematical intent directly and provide a path toward larger-scale numerical workloads.
+- Focused tests use `pytest.approx()` for floating-point results and cover both valid shapes and expected validation errors.
+
+### Deliberate Limitations
+
+This module is intentionally a thin educational wrapper around NumPy. It does not yet replace the pure-Python TF-IDF implementation or introduce sparse matrices, batching, or model libraries.
+
+## Feature 7: NumPy Ticket Retrieval
+
+### Goal
+
+Apply NumPy matrix operations to the existing TF-IDF ticket retriever and compare vectorized numerical retrieval with the loop-based implementation.
+
+### Implementation
+
+- `numpy_retrieval.py` fits one existing `TfidfVectorizer`, transforms historical tickets once, and stores the results as a matrix with one ticket per row.
+- Search converts the query to an array, calculates all ticket/query dot products with matrix multiplication, and computes row norms with `np.linalg.norm`.
+- Broadcasting combines each stored-ticket norm with the query norm. `np.divide(..., where=...)` assigns zero similarity safely whenever either norm is zero.
+- `np.argsort` ranks all scores without a Python loop over individual tickets; only the final metadata conversion creates `RetrievedTicket` objects.
+- Tests compare ordinary NumPy retrieval results with the existing `TicketRetriever` and cover empty histories, zero-vector queries, shape compatibility, and `top_k` behavior.
+
+### Production Python Concepts
+
+- A two-dimensional matrix gives every ticket the same feature space and lets one array operation process the full corpus.
+- Vectorized operations reduce Python interpreter overhead and make the numerical work explicit, while metadata remains handled at the application boundary.
+- Stable sorting keeps tie behavior predictable and aligned with the existing retriever.
+
+### Deliberate Limitations
+
+The implementation still uses the educational dense TF-IDF representation. Large production corpora would generally need sparse matrices, batch processing, and an indexed nearest-neighbor strategy.
+
 ## Delivery Workflow
 
 For each milestone:
@@ -170,5 +219,5 @@ The workflow uses `uv sync --locked`, so CI honors the committed lock file. To m
 - Add classification explanations while preserving the current domain contract.
 - Move rules into explicit, testable configuration.
 - Add a labeled retrieval dataset and aggregate metrics across multiple queries.
-- Compare retrieval behavior with sparse representations or a standard numerical library when the educational baseline is complete.
+- Compare retrieval behavior with sparse representations or use NumPy to accelerate a later numerical implementation.
 - Introduce an HTTP boundary only after the core domain behavior is stable.

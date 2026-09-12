@@ -2,7 +2,7 @@
 
 A long-term learning and building project for production Python and AI engineering.
 
-The project starts intentionally small. Runtime dependencies will be added only when a learning stage needs them.
+The project starts intentionally small. Runtime dependencies are added only when a learning stage needs them.
 
 ## Learning Log
 
@@ -38,6 +38,8 @@ These same checks run automatically in the `Python quality` GitHub Actions workf
 - `tfidf.py`: normalized TF-IDF vectors and cosine similarity
 - `retrieval.py`: reusable historical ticket retrieval
 - `evaluation.py`: precision@k and recall@k metrics
+- `numpy_basics.py`: NumPy arrays, vector operations, and matrices
+- `numpy_retrieval.py`: vectorized NumPy ticket retrieval
 - `tests/`: pytest test suite
 - `docs/learning-log.md`: milestone history, decisions, and next steps
 - `pyproject.toml`: project metadata and tool configuration
