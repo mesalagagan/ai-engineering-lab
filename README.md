@@ -8,6 +8,11 @@ The project starts intentionally small. Runtime dependencies are added only when
 
 The project history and the engineering concepts introduced at each milestone are documented in [docs/learning-log.md](docs/learning-log.md).
 
+## Learning Guides
+
+- [01: Foundations of Lexical Retrieval](docs/01-foundations-lexical-retrieval.md)
+- [02: Embeddings and Semantic Retrieval](docs/02-embeddings-semantic-retrieval.md)
+
 ## Requirements
 
 - Python 3.13+
@@ -40,6 +45,8 @@ These same checks run automatically in the `Python quality` GitHub Actions workf
 - `evaluation.py`: precision@k and recall@k metrics
 - `numpy_basics.py`: NumPy arrays, vector operations, and matrices
 - `numpy_retrieval.py`: vectorized NumPy ticket retrieval
+- `embeddings.py`: sentence-transformers text embedding wrapper
+- `semantic_retrieval.py`: dense embedding ticket retrieval
 - `tests/`: pytest test suite
 - `docs/learning-log.md`: milestone history, decisions, and next steps
 - `pyproject.toml`: project metadata and tool configuration

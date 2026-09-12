@@ -191,6 +191,30 @@ Apply NumPy matrix operations to the existing TF-IDF ticket retriever and compar
 
 The implementation still uses the educational dense TF-IDF representation. Large production corpora would generally need sparse matrices, batch processing, and an indexed nearest-neighbor strategy.
 
+## Feature 8: Dense Embeddings and Semantic Retrieval
+
+### Goal
+
+Move from lexical word-overlap retrieval toward learned dense representations that can connect related meanings even when the exact words differ.
+
+### Implementation
+
+- `embeddings.py` defines `TextEmbedder`, an application wrapper around `sentence-transformers`.
+- The wrapper loads `all-MiniLM-L6-v2` once, exposes the model name and discovered embedding dimension, and supports single or batch encoding into plain Python lists.
+- `semantic_retrieval.py` defines `SemanticTicketRetriever`, which accepts an injected embedder, embeds the historical corpus once, and stores one dense embedding row per ticket.
+- Search embeds a query once and calculates all cosine similarities with NumPy matrix multiplication, row-wise norms, broadcasting, guarded division, and stable sorting.
+- Tests use a deterministic fake embedder for most cases, avoiding repeated model downloads while verifying batch indexing, metadata preservation, dimensions, zero vectors, and tie behavior.
+
+### Production Python Concepts
+
+- Embedding models are feature encoders: the same model must encode both indexed documents and incoming queries.
+- Dense vectors distribute meaning across dimensions rather than assigning one coordinate to one vocabulary term.
+- Injecting the embedder makes the retriever testable and allows model selection to remain outside the retrieval algorithm.
+
+### Deliberate Limitations
+
+The current retriever uses brute-force dense matrix comparison and an in-memory index. Production systems may use model-specific batching, access-control filters, vector databases, approximate nearest-neighbor indexes, and hybrid lexical-plus-semantic retrieval.
+
 ## Delivery Workflow
 
 For each milestone:
