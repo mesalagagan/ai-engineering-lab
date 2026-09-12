@@ -184,9 +184,7 @@ The semantic retriever embeds historical tickets in one batch:
 
 ```python
 ticket_texts = [ticket["text"] for ticket in self._historical_tickets]
-self._embedding_matrix = vectors_to_matrix(
-    self._embedder.embed_texts(ticket_texts)
-)
+self._embedding_matrix = vectors_to_matrix(self._embedder.embed_texts(ticket_texts))
 ```
 
 Batch encoding is useful for two reasons:
