@@ -4,6 +4,10 @@ A long-term learning and building project for production Python and AI engineeri
 
 The project starts intentionally small. Runtime dependencies will be added only when a learning stage needs them.
 
+## Learning Log
+
+The project history and the engineering concepts introduced at each milestone are documented in [docs/learning-log.md](docs/learning-log.md).
+
 ## Requirements
 
 - Python 3.13+
@@ -28,5 +32,10 @@ uv run mypy src tests
 
 - `src/ai_engineering_lab/`: importable application package
 - `tests/`: pytest test suite
+- `docs/learning-log.md`: milestone history, decisions, and next steps
 - `pyproject.toml`: project metadata and tool configuration
 - `.venv/`: project-local virtual environment managed by `uv`
+
+## Development Workflow
+
+Each feature is developed on a dated branch, validated with the checks above, committed with a focused message, and pushed to GitHub. Pull request approval remains controlled by the GitHub repository's branch protection and review settings.
