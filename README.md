@@ -12,6 +12,7 @@ The project history and the engineering concepts introduced at each milestone ar
 
 - [01: Foundations of Lexical Retrieval](docs/01-foundations-lexical-retrieval.md)
 - [02: Embeddings and Semantic Retrieval](docs/02-embeddings-semantic-retrieval.md)
+- [03: RAG Pipeline and OpenAI Answer Generation](docs/03-rag-pipeline-and-openai-generation.md)
 
 ## Requirements
 
@@ -47,10 +48,14 @@ These same checks run automatically in the `Python quality` GitHub Actions workf
 - `numpy_retrieval.py`: vectorized NumPy ticket retrieval
 - `embeddings.py`: sentence-transformers text embedding wrapper
 - `semantic_retrieval.py`: dense embedding ticket retrieval
+- `hybrid_retrieval.py`: combined lexical and semantic ticket retrieval
+- `rag.py`: provider-independent RAG pipeline and deterministic answer generator
+- `openai_answer_generator.py`: OpenAI Responses API answer-generator adapter
 - `experiments/compare_retrieval.py`: lexical versus semantic retrieval experiment
 - `experiments/evaluate_retrieval.py`: precision@3 and recall@3 comparison
 - `tests/`: pytest test suite
 - `docs/learning-log.md`: milestone history, decisions, and next steps
+- `docs/03-rag-pipeline-and-openai-generation.md`: RAG and OpenAI adapter guide
 - `pyproject.toml`: project metadata and tool configuration
 - `.venv/`: project-local virtual environment managed by `uv`
 
