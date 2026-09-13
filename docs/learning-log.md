@@ -254,6 +254,46 @@ Measure TF-IDF and semantic rankings with precision@3 and recall@3 over the same
 
 The labels and six-query dataset are educational examples, not production relevance judgments. Meaningful evaluation requires a larger representative query set, independent labeling, confidence or agreement checks, latency measurements, and regression tracking.
 
+## Feature 11: RAG Pipeline and OpenAI Answer Generation
+
+### Goal
+
+Connect ticket retrieval to a replaceable answer-generation boundary while keeping
+the local demonstration deterministic and production API access safe and testable.
+
+### Implementation
+
+- `rag.py` defines immutable `RAGContext`, the `AnswerGenerator` protocol, context
+  formatting, `RAGPipeline`, and `ExtractiveAnswerGenerator`.
+- `RAGPipeline` retrieves tickets, formats source ticket IDs and text into context,
+  and invokes an injected `AnswerGenerator` with the original query and evidence.
+- `openai_answer_generator.py` implements that protocol with the official OpenAI
+  Python SDK and Responses API. It reads `OPENAI_API_KEY` from the environment,
+  centralizes the default model, and supports an injected client for tests.
+- Query and retrieved evidence are separate input messages. Instructions keep the
+  answer grounded in evidence and treat ticket text as untrusted data.
+- Empty context returns a local insufficient-information response without invoking
+  the API. Provider failures return a generic error without provider details.
+- `tests/test_openai_answer_generator.py` uses a fake Responses API client, so no
+  test needs credentials or makes a network call.
+
+### Production Python Concepts
+
+- Protocols make a provider adapter substitutable without coupling `RAGPipeline` to
+  the OpenAI SDK.
+- Constructor injection keeps boundary code testable: unit tests replace network
+  clients with deterministic fakes.
+- Prompt boundaries and generic error messages are part of handling untrusted data
+  and secrets, not merely prompt wording.
+
+### Deliberate Limitations
+
+The adapter does not yet cap retrieved-context size, return source citations, add
+retries or safe operational telemetry, or enforce an answer-quality threshold.
+The Responses API has data-retention behavior that should be reviewed before using
+it with sensitive ticket content. The companion guide documents setup, safety
+boundaries, and focused test commands in more detail.
+
 ## Delivery Workflow
 
 For each milestone:
