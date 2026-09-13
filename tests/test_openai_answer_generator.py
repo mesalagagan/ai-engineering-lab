@@ -1,6 +1,7 @@
 """Tests for the OpenAI answer-generator adapter without network access."""
 
 from types import SimpleNamespace
+from typing import Any
 
 import pytest
 
@@ -16,10 +17,10 @@ class FakeResponses:
 
     def __init__(self, output_text: str = "A supported answer.") -> None:
         self.output_text = output_text
-        self.calls: list[dict[str, object]] = []
+        self.calls: list[dict[str, Any]] = []
         self.error: Exception | None = None
 
-    def create(self, **kwargs: str) -> SimpleNamespace:
+    def create(self, **kwargs: Any) -> SimpleNamespace:
         self.calls.append(kwargs)
         if self.error is not None:
             raise self.error
