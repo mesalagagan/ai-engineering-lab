@@ -76,17 +76,26 @@ def test_missing_api_key_raises_without_exposing_a_key(monkeypatch: pytest.Monke
     assert "sk-" not in str(error.value)
 
 
-def test_sdk_errors_are_wrapped_without_logging_or_exposing_secrets(
+def test_sdk_errors_are_chained_with_a_sanitized_diagnostic(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     generator, responses = make_generator()
     secret = "sk-test-secret"
-    responses.error = RuntimeError(f"provider failed with {secret}")
+    provider_error = RuntimeError(f"provider failed with {secret}")
+    responses.error = provider_error
 
     with pytest.raises(RuntimeError, match="OpenAI answer generation failed") as error:
         generator("question", "context")
 
+    assert str(error.value) == "OpenAI answer generation failed"
+    assert error.value.__cause__ is provider_error
+    assert str(provider_error) == "provider failed with [REDACTED_OPENAI_API_KEY]"
+    assert error.value.__notes__ == [
+        "Diagnostic: RuntimeError: provider failed with [REDACTED_OPENAI_API_KEY]"
+    ]
     assert secret not in str(error.value)
+    assert secret not in str(error.value.__cause__)
+    assert secret not in "\n".join(error.value.__notes__)
     assert secret not in caplog.text
 
 

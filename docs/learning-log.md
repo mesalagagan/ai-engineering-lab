@@ -273,9 +273,13 @@ the local demonstration deterministic and production API access safe and testabl
 - Query and retrieved evidence are separate input messages. Instructions keep the
   answer grounded in evidence and treat ticket text as untrusted data.
 - Empty context returns a local insufficient-information response without invoking
-  the API. Provider failures return a generic error without provider details.
+  the API. Provider failures retain a generic public error, chain a redacted cause,
+  and add a safe type-and-message diagnostic note.
 - `tests/test_openai_answer_generator.py` uses a fake Responses API client, so no
   test needs credentials or makes a network call.
+- `experiments/run_openai_rag_demo.py` provides an opt-in manual live demo that
+  prints the question, retrieved ticket IDs and scores, and final model answer.
+  It reads the key through the adapter and warns that a request may incur cost.
 
 ### Production Python Concepts
 

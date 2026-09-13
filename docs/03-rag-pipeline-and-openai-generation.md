@@ -54,8 +54,10 @@ messages. The instructions require the model to:
 
 For empty or whitespace-only context, the generator returns the same deterministic
 fallback used by the extractive generator and makes no API request. Provider errors
-are replaced by a generic `RuntimeError` so provider diagnostics cannot expose
-request metadata or credentials to callers.
+retain the generic public `RuntimeError` message and chain the original exception.
+The adapter redacts `sk-...` values from the chained exception's displayable message
+and adds a safe diagnostic note containing only the exception type and sanitized
+message.
 
 ## Testing without credentials or network access
 
@@ -71,6 +73,22 @@ Run the focused tests with:
 ```powershell
 uv run pytest tests/test_openai_answer_generator.py
 ```
+
+## Manual live demo
+
+`experiments/run_openai_rag_demo.py` reuses the hybrid retriever and demo ticket
+dataset to answer one realistic payment-decline question through
+`OpenAIAnswerGenerator`. It prints the question, retrieved ticket IDs with their
+fusion scores, and the generated answer. It does not print the API key.
+
+Run it only after exporting `OPENAI_API_KEY`:
+
+```powershell
+uv run python experiments/run_openai_rag_demo.py
+```
+
+This is a live API request and may incur cost. It is deliberately separate from
+the deterministic local demo and must not be run as part of automated tests.
 
 ## Current limits
 

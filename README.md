@@ -53,6 +53,8 @@ These same checks run automatically in the `Python quality` GitHub Actions workf
 - `openai_answer_generator.py`: OpenAI Responses API answer-generator adapter
 - `experiments/compare_retrieval.py`: lexical versus semantic retrieval experiment
 - `experiments/evaluate_retrieval.py`: precision@3 and recall@3 comparison
+- `experiments/run_rag_demo.py`: deterministic local RAG demonstration
+- `experiments/run_openai_rag_demo.py`: live OpenAI RAG demonstration (may incur cost)
 - `tests/`: pytest test suite
 - `docs/learning-log.md`: milestone history, decisions, and next steps
 - `docs/03-rag-pipeline-and-openai-generation.md`: RAG and OpenAI adapter guide
